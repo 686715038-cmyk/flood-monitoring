@@ -1,1300 +1,193 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flood Monitoring System</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-/* LOGIN */
-#loginPage {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.login-box {
-  width: 100%;
-  max-width: 420px;
-  background: white;
-  padding: 35px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.1);
-}
-
-.login-box h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.login-box p {
-  text-align: center;
-  color: #64748b;
-  margin-bottom: 25px;
-}
-
-input {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  font-size: 16px;
-}
-
-button {
-  border: none;
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.login-btn {
-  width: 100%;
-  background: #2563eb;
-  color: white;
-}
-
-.login-btn:hover {
-  background: #1d4ed8;
-}
-
-#error {
-  color: #dc2626;
-  text-align: center;
-  margin-top: 15px;
-}
-
-/* DASHBOARD */
-#dashboardPage {
-  display: none;
-  min-height: 100vh;
-}
-
-header {
-  background: #0f172a;
-  color: white;
-  padding: 18px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 24px;
-}
-
-.header-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.refresh-btn {
-  background: #22c55e;
-  color: white;
-}
-
-.logout-btn {
-  background: #ef4444;
-  color: white;
-}
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 25px;
-}
-
-/* STATUS */
-.status-card {
-  padding: 25px;
-  border-radius: 18px;
-  color: white;
-  margin-bottom: 20px;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0,0,0,.1);
-}
-
-.status-card h2 {
-  margin: 0 0 10px;
-  font-size: 28px;
-}
-
-.status-card p {
-  margin: 5px 0;
-  font-size: 17px;
-}
-
-.normal {
-  background: #16a34a;
-}
-
-.warning {
-  background: #eab308;
-  color: #111827;
-}
-
-.high {
-  background: #f97316;
-}
-
-.danger {
-  background: #dc2626;
-}
-
-/* CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 25px;
-}
-
-.card {
-  background: white;
-  padding: 22px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
-}
-
-.card h3 {
-  margin-top: 0;
-  color: #64748b;
-}
-
-.card-value {
-  font-size: 30px;
-  font-weight: bold;
-}
-
-/* FILTER */
-.filter-box {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
-}
-
-.filter-box h2 {
-  margin-top: 0;
-}
-
-.filter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 12px;
-  align-items: end;
-}
-
-.filter-row input {
-  margin-bottom: 0;
-}
-
-.filter-btn {
-  background: #2563eb;
-  color: white;
-}
-
-/* CHART */
-.chart-box {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
-}
-
-.chart-container {
-  position: relative;
-  height: 400px;
-}
-
-/* HISTORY */
-.history-box {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
-}
-
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
-  text-align: center;
-}
-
-th {
-  background: #f8fafc;
-}
-
-/* LEVEL BADGE */
-.badge {
-  display: inline-block;
-  padding: 7px 14px;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
-}
-
-.badge-normal {
-  background: #16a34a;
-}
-
-.badge-warning {
-  background: #eab308;
-  color: #111827;
-}
-
-.badge-high {
-  background: #f97316;
-}
-
-.badge-danger {
-  background: #dc2626;
-}
-
-#lastUpdate {
-  color: #64748b;
-  margin-top: 10px;
-}
-
-/* MOBILE / IPAD */
-@media (max-width: 768px) {
-
-  header {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-  }
-
-  .header-buttons {
-    justify-content: center;
-  }
-
-  .cards {
-    grid-template-columns: 1fr;
-  }
-
-  .filter-row {
-    grid-template-columns: 1fr;
-  }
-
-  .container {
-    padding: 15px;
-  }
-
-  .chart-container {
-    height: 300px;
-  }
-
-  header h1 {
-    font-size: 20px;
-  }
-
-  .status-card h2 {
-    font-size: 24px;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบเฝ้าระวังระดับน้ำ - Flood Monitoring</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Prompt', sans-serif; }
+  </style>
 </head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
 
-<body>
+  <!-- Header -->
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">🌊</span>
+        <h1 class="text-xl font-bold">Flood Monitoring System</h1>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs text-slate-300">เชื่อมต่อสด Realtime</span>
+      </div>
+    </div>
+  </header>
 
-<!-- LOGIN -->
-<div id="loginPage">
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
 
-  <div class="login-box">
+    <!-- Card 1: Banner สถานะหลัก -->
+    <div id="status-card" class="rounded-2xl p-6 text-white shadow-lg transition-all duration-300 bg-slate-700">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          <span class="text-sm uppercase tracking-wider opacity-80">สถานะปัจจุบัน</span>
+          <h2 id="status-title" class="text-3xl font-bold mt-1">กำลังโหลดข้อมูล...</h2>
+        </div>
+        <div class="text-right">
+          <p class="text-sm opacity-80">ระดับความเสี่ยง</p>
+          <p id="status-level" class="text-4xl font-extrabold">-</p>
+        </div>
+      </div>
+    </div>
 
-    <h1>🌊 Flood Monitoring</h1>
+    <!-- Cards แสดงค่าระดับน้ำ และระยะห่าง -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Card ระดับน้ำ -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500 text-sm font-medium">ระดับน้ำปัจจุบัน</span>
+          <span class="text-blue-500 bg-blue-50 p-2 rounded-xl text-xl">📏</span>
+        </div>
+        <div class="mt-4">
+          <span id="water-level" class="text-4xl font-bold text-slate-900">0.0</span>
+          <span class="text-slate-500 font-medium ml-1">ซม.</span>
+        </div>
+      </div>
 
-    <p>ระบบตรวจวัดระดับน้ำ</p>
+      <!-- Card ระยะห่างจากเซนเซอร์ -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500 text-sm font-medium">ระยะห่างเซนเซอร์</span>
+          <span class="text-indigo-500 bg-indigo-50 p-2 rounded-xl text-xl">📡</span>
+        </div>
+        <div class="mt-4">
+          <span id="distance" class="text-4xl font-bold text-slate-900">0.0</span>
+          <span class="text-slate-500 font-medium ml-1">ซม.</span>
+        </div>
+      </div>
 
-    <input
-      type="email"
-      id="email"
-      placeholder="Email"
-    >
-
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-    >
-
-    <button
-      class="login-btn"
-      id="loginBtn">
-      เข้าสู่ระบบ
-    </button>
-
-    <div id="error"></div>
-
-  </div>
-
-</div>
-
-
-<!-- DASHBOARD -->
-<div id="dashboardPage">
-
-<header>
-
-  <h1>🌊 Flood Monitoring Dashboard</h1>
-
-  <div class="header-buttons">
-
-    <button
-      class="refresh-btn"
-      id="refreshBtn">
-      🔄 รีเฟรช
-    </button>
-
-    <button
-      class="logout-btn"
-      id="logoutBtn">
-      ออกจากระบบ
-    </button>
-
-  </div>
-
-</header>
-
-
-<div class="container">
-
-  <!-- CURRENT STATUS -->
-  <div
-    id="statusCard"
-    class="status-card normal">
-
-    <h2 id="statusText">
-      กำลังโหลด...
-    </h2>
-
-    <p id="statusDetail">
-      กรุณารอสักครู่
-    </p>
-
-  </div>
-
-
-  <!-- CURRENT DATA -->
-  <div class="cards">
-
-    <div class="card">
-
-      <h3>📏 ระยะห่างจากเซนเซอร์</h3>
-
-      <div class="card-value">
-        <span id="distance">-</span> cm
+      <!-- Card เวลาอัปเดต -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500 text-sm font-medium">อัปเดตล่าสุด</span>
+          <span class="text-emerald-500 bg-emerald-50 p-2 rounded-xl text-xl">⏱️</span>
+        </div>
+        <div class="mt-4">
+          <span id="last-updated" class="text-lg font-semibold text-slate-700 block mt-2">-</span>
+        </div>
       </div>
 
     </div>
 
-
-    <div class="card">
-
-      <h3>🌊 ระดับน้ำ</h3>
-
-      <div class="card-value">
-        ระดับ <span id="level">-</span>
+    <!-- ประวัติรายการล่าสุด -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+          <span>📋</span> ประวัติการวัดล่าสุด (10 รายการล่าสุด)
+        </h3>
       </div>
-
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600">
+          <thead class="bg-slate-50 text-slate-700 font-medium uppercase text-xs">
+            <tr>
+              <th class="px-6 py-3">ระยะเซนเซอร์</th>
+              <th class="px-6 py-3">ระดับน้ำ</th>
+              <th class="px-6 py-3">ระดับ</th>
+              <th class="px-6 py-3">สถานะ</th>
+            </tr>
+          </thead>
+          <tbody id="history-table" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="4" class="px-6 py-4 text-center text-slate-400">กำลังดึงข้อมูล...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-
-    <div class="card">
-
-      <h3>🕒 อัปเดตล่าสุด</h3>
-
-      <div
-        class="card-value"
-        style="font-size:20px"
-        id="lastUpdate">
-        -
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- FILTER -->
-  <div class="filter-box">
-
-    <h2>📅 เลือกช่วงข้อมูล</h2>
-
-    <div class="filter-row">
-
-      <div>
-
-        <label>วันที่เริ่มต้น</label>
-
-        <input
-          type="datetime-local"
-          id="startDate">
-
-      </div>
-
-
-      <div>
-
-        <label>วันที่สิ้นสุด</label>
-
-        <input
-          type="datetime-local"
-          id="endDate">
-
-      </div>
-
-
-      <button
-        class="filter-btn"
-        id="filterBtn">
-        🔍 แสดงข้อมูล
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- CHART -->
-  <div class="chart-box">
-
-    <h2>📈 กราฟระดับน้ำ</h2>
-
-    <div class="chart-container">
-
-      <canvas id="waterChart"></canvas>
-
-    </div>
-
-  </div>
-
-
-  <!-- HISTORY -->
-  <div class="history-box">
-
-    <h2>💾 ประวัติระดับน้ำ</h2>
-
-    <table>
-
-      <thead>
-
-        <tr>
-
-          <th>วัน/เวลา</th>
-
-          <th>ระยะห่าง</th>
-
-          <th>ระดับน้ำ</th>
-
-          <th>สถานะ</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody id="historyTable">
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<script type="module">
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  setPersistence,
-  browserLocalPersistence
-}
-from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-
-import {
-  getDatabase,
-  ref,
-  onValue
-}
-from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
-
-
-/* FIREBASE */
-
-const firebaseConfig = {
-
-  apiKey: "AIzaSyCVM7NxkPt8E8PKLS3N0drkNBTtXb5-bTI",
-
-  authDomain: "ruokmm.firebaseapp.com",
-
-  databaseURL:
-  "https://ruokmm-default-rtdb.asia-southeast1.firebasedatabase.app",
-
-  projectId: "ruokmm",
-
-  storageBucket:
-  "ruokmm.firebasestorage.app",
-
-  messagingSenderId:
-  "360906787961",
-
-  appId:
-  "1:360906787961:web:48be864228ef96dbb918a8",
-
-  measurementId:
-  "G-GSSZ3QPD32"
-
-};
-
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getDatabase(app);
-
-
-/* VARIABLES */
-
-let waterData = [];
-
-let chart = null;
-
-let stopWaterListener = null;
-
-
-/* LOGIN PERSISTENCE */
-
-await setPersistence(
-  auth,
-  browserLocalPersistence
-);
-
-
-/* ELEMENTS */
-
-const loginPage =
-  document.getElementById("loginPage");
-
-const dashboardPage =
-  document.getElementById("dashboardPage");
-
-const emailInput =
-  document.getElementById("email");
-
-const passwordInput =
-  document.getElementById("password");
-
-const loginBtn =
-  document.getElementById("loginBtn");
-
-const errorBox =
-  document.getElementById("error");
-
-
-/* LOGIN */
-
-async function login() {
-
-  const email =
-    emailInput.value.trim();
-
-  const password =
-    passwordInput.value;
-
-  errorBox.textContent = "";
-
-  if (!email || !password) {
-
-    errorBox.textContent =
-      "กรุณากรอก Email และ Password";
-
-    return;
-  }
-
-  try {
-
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    errorBox.textContent =
-      "Email หรือ Password ไม่ถูกต้อง";
-
-  }
-
-}
-
-
-loginBtn.addEventListener(
-  "click",
-  login
-);
-
-
-passwordInput.addEventListener(
-  "keydown",
-  event => {
-
-    if (event.key === "Enter") {
-
-      login();
-
-    }
-
-  }
-);
-
-
-/* AUTH */
-
-onAuthStateChanged(
-  auth,
-  user => {
-
-    if (user) {
-
-      loginPage.style.display =
-        "none";
-
-      dashboardPage.style.display =
-        "block";
-
-      loadWaterData();
-
-    } else {
-
-      loginPage.style.display =
-        "flex";
-
-      dashboardPage.style.display =
-        "none";
-
-      if (stopWaterListener) {
-
-        stopWaterListener();
-
-        stopWaterListener = null;
-
-      }
-
-      if (chart) {
-
-        chart.destroy();
-
-        chart = null;
-
-      }
-
-    }
-
-  }
-);
-
-
-/* LOGOUT */
-
-document
-  .getElementById("logoutBtn")
-  .addEventListener(
-    "click",
-    async () => {
-
-      await signOut(auth);
-
-    }
-  );
-
-
-/* LEVEL INFORMATION */
-
-function getLevelInfo(level) {
-
-  level = Number(level);
-
-  if (level === 0) {
-
-    return {
-
-      text: "🟢 ระดับน้ำปกติ",
-
-      short: "ปกติ",
-
-      className: "normal",
-
-      badge: "badge-normal"
-
+  </main>
+
+  <!-- Firebase Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    const firebaseConfig = {
+      databaseURL: "https://ruokmm-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
 
-  }
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
-  if (level === 1) {
+    const logsRef = query(ref(database, '/'), limitToLast(10));
 
-    return {
+    onValue(logsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
 
-      text: "🟡 เฝ้าระวัง",
+      const items = Object.keys(data).map(key => ({
+        id: key,
+        ...data[key]
+      })).reverse();
 
-      short: "เฝ้าระวัง",
+      const latest = items[0];
 
-      className: "warning",
+      if (latest) {
+        const distance = latest.distance_cm || latest.distance || 0;
+        const waterLevel = latest.water_level_cm || latest.waterLevel || 0;
+        const levelState = latest.level_state || latest.level || 1;
+        const statusText = latest.status_text || latest.status || "ปกติ";
 
-      badge: "badge-warning"
+        document.getElementById("distance").innerText = Number(distance).toFixed(1);
+        document.getElementById("water-level").innerText = Number(waterLevel).toFixed(1);
+        document.getElementById("status-level").innerText = "ระดับ " + levelState;
+        document.getElementById("status-title").innerText = statusText;
 
-    };
+        const now = new Date();
+        document.getElementById("last-updated").innerText = now.toLocaleTimeString('th-TH') + " น.";
 
-  }
-
-  if (level === 2) {
-
-    return {
-
-      text: "🟠 ระดับน้ำสูง",
-
-      short: "ระดับสูง",
-
-      className: "high",
-
-      badge: "badge-high"
-
-    };
-
-  }
-
-  return {
-
-    text: "🔴 ระดับน้ำอันตราย",
-
-    short: "อันตราย",
-
-    className: "danger",
-
-    badge: "badge-danger"
-
-  };
-
-}
-
-
-/* FORMAT TIME */
-
-function formatTime(timestamp) {
-
-  if (!timestamp) {
-
-    return "-";
-
-  }
-
-  let time =
-    Number(timestamp);
-
-  if (time < 10000000000) {
-
-    time = time * 1000;
-
-  }
-
-  return new Date(time)
-    .toLocaleString("th-TH");
-
-}
-
-
-/* LOAD FIREBASE DATA */
-
-function loadWaterData() {
-
-  const waterRef =
-    ref(db, "waterLevels");
-
-
-  if (stopWaterListener) {
-
-    stopWaterListener();
-
-  }
-
-
-  stopWaterListener =
-    onValue(
-      waterRef,
-      snapshot => {
-
-        const data =
-          snapshot.val();
-
-
-        waterData = [];
-
-
-        if (data) {
-
-          Object.keys(data).forEach(
-            key => {
-
-              const item =
-                data[key];
-
-
-              if (
-                item &&
-                item.level !== undefined
-              ) {
-
-                waterData.push({
-
-                  id: key,
-
-                  distance:
-                    Number(item.distance || 0),
-
-                  level:
-                    Number(item.level || 0),
-
-                  timestamp:
-                    Number(item.timestamp || 0)
-
-                });
-
-              }
-
-            }
-          );
-
+        const statusCard = document.getElementById("status-card");
+        if (levelState === 3) {
+          statusCard.className = "rounded-2xl p-6 text-white shadow-lg transition-all duration-300 bg-red-600";
+        } else if (levelState === 2) {
+          statusCard.className = "rounded-2xl p-6 text-white shadow-lg transition-all duration-300 bg-amber-500";
+        } else {
+          statusCard.className = "rounded-2xl p-6 text-white shadow-lg transition-all duration-300 bg-emerald-600";
         }
 
+        const tableBody = document.getElementById("history-table");
+        tableBody.innerHTML = "";
 
-        waterData.sort(
-          (a,b) =>
-            a.timestamp - b.timestamp
-        );
+        items.forEach(item => {
+          const d = item.distance_cm || item.distance || 0;
+          const w = item.water_level_cm || item.waterLevel || 0;
+          const l = item.level_state || item.level || 1;
+          const s = item.status_text || item.status || "ปกติ";
 
+          let badgeClass = "bg-emerald-100 text-emerald-800";
+          if (l === 3) badgeClass = "bg-red-100 text-red-800";
+          else if (l === 2) badgeClass = "bg-amber-100 text-amber-800";
 
-        updateCurrentData();
-
-        applyFilter();
-
-      },
-
-      error => {
-
-        console.error(
-          "Firebase error:",
-          error
-        );
-
-        document.getElementById(
-          "statusText"
-        ).textContent =
-          "ไม่สามารถอ่านข้อมูลได้";
-
-        document.getElementById(
-          "statusDetail"
-        ).textContent =
-          "ตรวจสอบ Firebase Database Rules";
-
+          const row = `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-6 py-4 font-medium">${Number(d).toFixed(1)} cm</td>
+              <td class="px-6 py-4 font-semibold text-slate-800">${Number(w).toFixed(1)} cm</td>
+              <td class="px-6 py-4">ระดับ ${l}</td>
+              <td class="px-6 py-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                  ${s}
+                </span>
+              </td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
       }
-    );
-
-}
-
-
-/* CURRENT DATA */
-
-function updateCurrentData() {
-
-  if (waterData.length === 0) {
-
-    document.getElementById(
-      "statusText"
-    ).textContent =
-      "ยังไม่มีข้อมูล";
-
-    return;
-
-  }
-
-
-  const latest =
-    waterData[
-      waterData.length - 1
-    ];
-
-
-  const info =
-    getLevelInfo(latest.level);
-
-
-  const statusCard =
-    document.getElementById(
-      "statusCard"
-    );
-
-
-  statusCard.className =
-    "status-card " +
-    info.className;
-
-
-  document.getElementById(
-    "statusText"
-  ).textContent =
-    info.text;
-
-
-  document.getElementById(
-    "statusDetail"
-  ).textContent =
-    `ระดับน้ำ ${latest.level} | ระยะห่าง ${latest.distance} cm`;
-
-
-  document.getElementById(
-    "distance"
-  ).textContent =
-    latest.distance;
-
-
-  document.getElementById(
-    "level"
-  ).textContent =
-    latest.level;
-
-
-  document.getElementById(
-    "lastUpdate"
-  ).textContent =
-    formatTime(latest.timestamp);
-
-}
-
-
-/* FILTER */
-
-function applyFilter() {
-
-  let filtered =
-    [...waterData];
-
-
-  const start =
-    document.getElementById(
-      "startDate"
-    ).value;
-
-
-  const end =
-    document.getElementById(
-      "endDate"
-    ).value;
-
-
-  if (start) {
-
-    const startTime =
-      new Date(start)
-        .getTime();
-
-
-    filtered =
-      filtered.filter(
-        item => {
-
-          let t =
-            Number(item.timestamp);
-
-          if (t < 10000000000) {
-
-            t *= 1000;
-
-          }
-
-          return t >= startTime;
-
-        }
-      );
-
-  }
-
-
-  if (end) {
-
-    const endTime =
-      new Date(end)
-        .getTime();
-
-
-    filtered =
-      filtered.filter(
-        item => {
-
-          let t =
-            Number(item.timestamp);
-
-          if (t < 10000000000) {
-
-            t *= 1000;
-
-          }
-
-          return t <= endTime;
-
-        }
-      );
-
-  }
-
-
-  updateChart(filtered);
-
-  updateHistory(filtered);
-
-}
-
-
-/* FILTER BUTTON */
-
-document
-  .getElementById("filterBtn")
-  .addEventListener(
-    "click",
-    applyFilter
-  );
-
-
-/* CHART */
-
-function updateChart(data) {
-
-  const ctx =
-    document
-      .getElementById(
-        "waterChart"
-      )
-      .getContext("2d");
-
-
-  const labels =
-    data.map(
-      item =>
-        formatTime(item.timestamp)
-    );
-
-
-  const levels =
-    data.map(
-      item =>
-        item.level
-    );
-
-
-  if (chart) {
-
-    chart.destroy();
-
-  }
-
-
-  chart =
-    new Chart(
-      ctx,
-      {
-
-        type: "line",
-
-        data: {
-
-          labels: labels,
-
-          datasets: [
-
-            {
-
-              label:
-                "ระดับน้ำ",
-
-              data:
-                levels,
-
-              borderWidth: 3,
-
-              pointRadius: 4,
-
-              tension: 0.3,
-
-              fill: false
-
-            }
-
-          ]
-
-        },
-
-        options: {
-
-          responsive: true,
-
-          maintainAspectRatio: false,
-
-          scales: {
-
-            y: {
-
-              min: 0,
-
-              max: 3,
-
-              ticks: {
-
-                stepSize: 1,
-
-                callback:
-                  value =>
-                    "ระดับ " + value
-
-              }
-
-            }
-
-          },
-
-          plugins: {
-
-            legend: {
-
-              display: true
-
-            }
-
-          }
-
-        }
-
-      }
-    );
-
-}
-
-
-/* HISTORY TABLE */
-
-function updateHistory(data) {
-
-  const table =
-    document.getElementById(
-      "historyTable"
-    );
-
-
-  table.innerHTML = "";
-
-
-  const reversed =
-    [...data].reverse();
-
-
-  reversed.forEach(
-    item => {
-
-      const info =
-        getLevelInfo(item.level);
-
-
-      const row =
-        document.createElement("tr");
-
-
-      row.innerHTML = `
-
-        <td>
-          ${formatTime(item.timestamp)}
-        </td>
-
-        <td>
-          ${item.distance} cm
-        </td>
-
-        <td>
-          ระดับ ${item.level}
-        </td>
-
-        <td>
-
-          <span class="badge ${info.badge}">
-            ${info.short}
-          </span>
-
-        </td>
-
-      `;
-
-
-      table.appendChild(row);
-
-    }
-  );
-
-}
-
-
-/* REFRESH */
-
-document
-  .getElementById("refreshBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      loadWaterData();
-
-    }
-  );
-
-</script>
-
+    });
+  </script>
 </body>
 </html>
